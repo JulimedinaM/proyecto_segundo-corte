@@ -1,0 +1,528 @@
+////
+JULIANA MEDINA
+JUAN MANUEL CARDONA
+////
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define reservar_memoria (nodo*)malloc(sizeof(nodo));
+
+
+//nodo para la PILA
+struct nodo{
+	int dato;
+	nodo * siguiente;
+}*actual,*inicio,*fin;
+FILE *Pila;
+nodo *pila=NULL;
+//---------------------------//
+
+//prototipo de funciones
+void insertarElemento(nodo *&, int);
+void mostrarElemento(nodo *);
+void cargar();
+void buscarElemento(int, nodo*);
+void sacarPila(nodo *&, int&);
+void sacar_ElementoPila(nodo *&, int&);
+void editarPila(nodo*,int);
+void ordenarPila(nodo *);
+bool pilaVacia(nodo *);
+int pedirDatos();
+void menu();
+void m_pila();
+void m_cola();
+void  generarDatos ( nodo  *& , nodo  *& );
+void  imprimirDatos ( nodo  * );
+void  insertarDatosCola ( int , nodo  * & , nodo  * & );
+void mostrarCola();
+void buscarCola(nodo *);
+void eliminarCola(nodo *&);
+bool cola_vacia(nodo *);
+void editarCola(nodo *&);
+void ordenarDatos(nodo *);
+//----------------------------//
+
+int opcion,flag,n;//variables globales para los menus
+
+int main (int argc, char *argv[]) {
+	menu();
+	return 0;
+}
+void menu(){
+	int flag=1;
+	while (flag !=0){
+		printf(" MENU PRINCIPAL \n");
+		printf(" 1. Operaciones con PILA \n");
+		printf(" 2. Operaciones con COLAS \n\n");
+		printf(" 0. Salir \n\n");
+		printf(" Ingrese Opcion: \n");
+		scanf("%d",&opcion);
+		switch(opcion){
+		case 1:
+			m_pila();
+			system("pause");
+			system("cls");
+			break;
+			
+		case 2:
+			m_cola();
+			system("pause");
+			system("cls");
+			break;
+		case 0:
+			printf("HASTA LUEGO\n");
+			flag=0;
+			break;
+		default:
+			printf("Opcion Invalida\n");
+			system("pause");
+			system("cls");
+			break;
+		}
+	}
+}
+void m_pila(){
+	system("cls");
+	int n,aux;
+	flag=1;
+	while(flag !=0){
+		printf(" Menu PILA \n");
+		printf(" 1. Insertar Elemento a la PILA\n");
+		printf(" 2. Mostrar Elementos de la Pila \n");
+		printf(" 3. Buscar Elementos en la PILA \n");
+		printf(" 4. Eliminar  todos los Elementos de la PILA \n");
+		printf(" 5. Eliminar  uno o varios elementos de la PILA \n");
+		printf(" 6. Editar Elementos en la PILA \n");
+		printf(" 7. Ordenar Elementos en la PILA \n");
+		printf(" 8. PILA vacia \n");
+		printf(" 9. cargar archivos \n\n");
+		printf(" 0. Volver al Menu Principal \n\n");
+		printf(" Ingrese Opcion: \n");
+		scanf("%d",&opcion);
+		switch(opcion){
+		case 1:
+			n = 0;
+			while(n != -1){
+				n = pedirDatos();
+				if(n != -1){
+					insertarElemento(pila,n);
+				}
+			}
+			
+			system("pause");
+			system("cls");
+			break;
+		case 2:
+			mostrarElemento(pila);
+			system("pause");
+			system("cls");
+			break;
+		case 3:
+			n = pedirDatos();
+			buscarElemento(n,pila);
+			system("pause");
+			system("cls");
+			break;
+		case 4:
+			if(pilaVacia(pila)){
+				printf("PILA VACIA\n");	
+			}else{
+				while(pila != NULL ){//mientras no sea el final de la pila
+					sacarPila(pila,n);
+					if(pila != NULL){
+						printf("%d , ",n);
+					}else{
+						printf("%d .\n Eliminados Correctamente ",n);
+					}
+				}
+			}
+			system("pause");
+			system("cls");
+			break;
+		case 5:
+			if(pilaVacia(pila)){
+				printf("PILA VACIA\n");	
+			}else{
+				mostrarElemento(pila);
+				printf("\nDigite cuantos elementos desea eliminar: ");
+				scanf("%d",&n);
+				sacar_ElementoPila(pila,n);
+			}
+			system("pause");
+			system("cls");
+			break;
+		case 6:
+			mostrarElemento(pila);
+			n=pedirDatos();
+			editarPila(pila,n);
+			system("pause");
+			system("cls");
+			break;
+		case 7:
+			ordenarPila(pila);
+			system("pause");
+			system("cls");
+			break;
+		case 8:
+			n=pilaVacia(pila);
+			if(n == true){
+				printf("la pila esta vacia\n");
+			}else{
+				printf("pila llena\n");
+			}
+			system("pause");
+			system("cls");
+			break;
+		case 9:
+			cargar();
+			system("pause");
+			system("cls");
+			break;
+		case 0:
+			flag=0;
+			printf("Hasta La Proxima\n");
+			break;
+		default:
+			printf("DATO INVALIDO\n\n");
+			system("pause");
+			system("cls");
+			break;
+		}
+	}
+}
+void m_cola(){
+	system("cls");
+	nodo  * inicio  =  NULL ;
+	nodo  * fin  =  NULL ;
+	flag=1;
+	while(flag !=0){
+	printf("   MENU  COLA \n\n");
+	printf("1. GENERAR \n");
+	printf("2. MOSTRAR \n");
+	printf("3. BUSCAR \n");
+	printf("4. ELIMINAR \n");
+	printf("5. EDITAR \n");
+	printf("6. ORDENAR \n");
+	printf("7. COLA VACIA \n");
+	printf("0. SALIR \n");
+	printf("Seleccione Opcion\n\n");
+	scanf("%d",&opcion);
+	
+	system("cls");
+	
+	switch (opcion){
+		
+	case 1:
+		generarDatos ( inicio , fin );
+		break;
+	case 2:
+		imprimirDatos ( inicio );
+		system("pause");
+		system("cls");
+		break;	
+	case 3:
+		buscarCola(inicio);
+		system("pause");
+		system("cls");
+		break;
+	case 4:
+		
+		eliminarCola(inicio);
+		system("pause");
+		system("cls");
+		break;	
+		
+	case 5:
+		
+		editarCola(inicio);
+		system("pause");
+		system("cls");
+		break;	
+		
+	case 6:
+		
+		ordenarDatos(inicio);
+		system("pause");
+		system("cls");
+		break;	
+	case 7:
+		
+		n=cola_vacia(inicio);
+		if(n == true){
+			printf("la cola esta vacia\n");
+		}else{
+			printf("Cola Llena\n");
+		}
+		system("pause");
+		system("cls");
+		break;	
+	case 0:
+		printf("Adiosito \n");
+		flag=0;
+		break;	
+	default:system("cls");
+	printf("opcion invalida \n");
+	system("cls");
+	break;	
+	
+	}
+	}
+}
+
+void insertarElemento(nodo *&pila,int n){
+	nodo *elemento = reservar_memoria; //crear espacio en memoria
+	elemento->dato = n;	//cargar el valor dentro del nodo (dato)
+	elemento->siguiente = pila;//cargar el puntero pila dentro del nodo sgte 
+	pila = elemento;//asignar el nuevo nodo a pila
+	printf("Elemento %d agregado correctamente\n ",n);
+	if (Pila==NULL){
+		Pila=fopen("aleatorios.txt","w+b");
+	}
+	fwrite(&pila,sizeof(pila),1,Pila);
+	rewind(Pila);
+	fclose(Pila);
+}
+void cargar(){
+	Pila=fopen("aleatorios.txt","rb");
+	rewind(Pila);
+	while(fread(&pila,sizeof(pila),1,Pila)){
+		while(pila!= NULL){
+			printf("%d / ",pila->dato);
+			pila=pila->siguiente;
+		}
+		
+	}
+}
+void sacarPila(nodo *&pila,int &n){
+	nodo *aux=pila;//crear variable auxiliar e igualarlo a pila
+	n=aux->dato;//en n almacenar aux_dato(valor)
+	pila=aux->siguiente;//que pila señale al siguiente nodo ya que en el que esta sera eliminado
+	free(aux);//eliminar dicho nodo
+}
+void sacar_ElementoPila(nodo *&pila,int &n){
+	if(pilaVacia(pila)){
+		printf("PILA VACIA\n");	
+	}else{ 
+		int i=1,j=n ;
+		while(i<=j){
+			nodo *aux=pila;//crear variable auxiliar e igualarlo a pila
+			n=aux->dato;//en n almacenar aux_dato(valor)
+			pila=aux->siguiente;//que pila señale al siguiente nodo ya que en el que esta sera eliminado
+			free(aux);//eliminar dicho nodo
+			i++;
+		}	
+	}
+}
+void mostrarElemento(nodo* pila){
+	if(pilaVacia(pila)){
+		printf("PILA VACIA\n");	
+	}else{
+		nodo * pilita=pila;//lo que esta en pila lo copia en pilita
+		while(pilita!= NULL){
+			printf("%d / ",pilita->dato);
+			pilita=pilita->siguiente;
+		}
+	}
+}
+void buscarElemento(int d,nodo* pila){
+	if(pilaVacia(pila)){
+		printf("PILA VACIA\n");	
+	}else{
+		int cont = 0;
+		while(pila != NULL){
+			cont+=1;
+			if(d==pila->dato){
+				printf("Elemento encontrado : %d Posicion : %d \n",d,cont);
+				
+			}
+			pila=pila->siguiente;
+		}
+		if(cont == 0){
+			printf(":( lo siento no encontre el dato\n");
+		}
+		cont=0;
+	}
+}
+void editarPila(nodo* pila,int n){
+	if(pilaVacia(pila)){
+		printf("PILA VACIA\n");	
+	}else{
+		nodo * aux=pila;
+		int cont = 0,nuevo_dato;
+		while(aux != NULL){
+			cont+=1;
+			if(n==aux->dato){
+				nuevo_dato=pedirDatos();
+				aux->dato=nuevo_dato;
+				printf("Elemento Nuevo : %d \n",aux->dato);
+				
+			}
+			aux=aux->siguiente;
+		}
+		if(cont == 0){
+			printf(":( lo siento no encontre el dato\n");
+		}
+		cont=0;
+	}
+	
+}
+void ordenarPila(nodo * pila){
+	int n;
+	if(pilaVacia(pila)){
+		printf("PILA VACIA\n");	
+	}else{
+		printf("Elementos en Pila\n");
+		mostrarElemento(pila);
+		nodo * aux =pila ;
+		while(aux != NULL){
+			nodo * aux_2 = aux->siguiente;
+			while(aux_2 != NULL){
+				if(aux->dato > aux_2->dato){
+					n= aux_2->dato;
+					aux_2->dato = aux->dato;
+					aux->dato = n;
+				}
+				aux_2 = aux_2->siguiente;
+			}
+			aux = aux->siguiente;
+		}
+		printf("\n Elementos Ordenados\n");
+		mostrarElemento(pila);
+	}
+}
+bool pilaVacia(nodo *pila){
+	return (pila==NULL)? true:false;
+}
+
+
+
+int pedirDatos(){
+	int n;
+	printf("Digite un numero\n");
+	scanf("%d", &n);
+	return n;
+}
+
+
+void  generarDatos ( nodo  *& inicio , nodo  *& fin ) {
+	int  cantDatos , i , aleatorio ;
+	printf ( "Ingrese la cantidad de datos a generar \n" );
+	scanf ( "%d" , &cantDatos );
+	srand ( time ( NULL ));
+	for( i  =  1 ; i  <=  cantDatos ; i ++ ) {
+		aleatorio  = ( rand () % ( 1999999  +  1 ) -  1000000 );
+		insertarDatosCola ( aleatorio , inicio , fin );
+	}
+}
+
+void  imprimirDatos ( nodo  * inicio ) {
+	nodo  *  aux  =  inicio ;
+	if ( inicio  ==  NULL ) {
+		printf ( "Esta vacio \n" );
+	} else {
+		while( aux  !=  NULL ) {
+			printf ( "%d" , aux  ->  dato );
+			aux  =  aux  ->  siguiente ;
+		}
+	}
+}
+
+void  insertarDatosCola ( int  n , nodo  *& inicio , nodo  *& fin ) {
+	nodo  *  nuevo_nodo  =  reservar_memoria ;
+	nuevo_nodo  ->  dato  =  n ;
+	nuevo_nodo  ->  siguiente  =  NULL ;
+	if ( inicio  ==  NULL ) {
+		inicio  =  nuevo_nodo ;
+	} else {
+		fin  ->  siguiente  =  nuevo_nodo ;
+	}
+	fin  =  nuevo_nodo ;
+}
+void buscarCola(nodo *inicio){
+	actual=inicio;
+	int datoBuscar=0,cont=0;
+	printf("ingrese el dato que desea buscar\n");
+	scanf("%d",&datoBuscar);
+	if (cola_vacia(inicio)){
+		printf("No hay elementos en la cola");
+	}else{
+		
+		while(actual!=NULL ){
+			if  (datoBuscar==actual->dato){
+				cont+=1;
+				break;
+			}
+			actual=actual->siguiente;
+		}
+		if(cont==0){
+			printf("el dato no se encuentra en la cola ");
+		}else{
+			printf("dato encontrado %d",datoBuscar);
+		}
+	}	
+}
+bool cola_vacia(nodo *inicio){
+	return (inicio==NULL)?true:false;	
+}
+void eliminarCola(nodo *&inicio){
+	actual=inicio;
+	if (cola_vacia(inicio)){
+		printf("No hay elementos en la cola");	
+	}else{
+		inicio=actual->siguiente;
+		free (actual); 
+	}
+}	
+void editarCola(nodo *&inicio){
+	actual=inicio;
+	int datoBuscar=0,cont=0,nuevo_dato;
+	printf("ingrese el dato que desea  buscar para editar\n");
+	scanf("%d",&datoBuscar);
+	printf("ingrese el nuevo dato\n");
+	scanf("%d",&nuevo_dato);
+	
+	if (cola_vacia(inicio)){
+		printf("No hay elementos en la cola");
+	}else{
+		
+		while(actual!=NULL ){
+			if  (datoBuscar==actual->dato){
+				cont+=1;
+			actual->dato=nuevo_dato;
+				break;
+			}
+			actual=actual->siguiente;
+		}
+		if(cont==0){
+			printf("el dato no se encuentra en la cola ");
+		}else{
+			printf("dato modificado %d",actual->dato);
+		}
+	}	
+	
+}
+
+void ordenarDatos(nodo *inicio){
+	int aux;
+	nodo * x = inicio;
+	nodo * y = NULL;
+	if(inicio == NULL){
+		printf("No hay elementos en la cola\n");
+	}else{
+		while(x != NULL){
+			y = x -> siguiente;
+			while(y != NULL){
+				if(x -> dato > y -> dato){
+					aux = x -> dato;
+					x -> dato = y -> dato;
+					y -> dato = aux;
+				}
+				y = y -> siguiente;
+			}
+			x = x -> siguiente;
+		}
+	}
+}
